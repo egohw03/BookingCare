@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs';
 import db from "../models/index.js";
 
-let createNewUser = async(data) => {
-    return new Promise(async(resolve, reject) => {
+let createNewUser = async (data) => {
+    return new Promise(async (resolve, reject) => {
         try {
             console.log('Received data:', data); // Debug what data we're receiving
             let hashPasswordFromBcrypt = await hashUserPassword(data.password);
@@ -25,7 +25,7 @@ let createNewUser = async(data) => {
 }
 
 let hashUserPassword = (password) => {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             let salt = await bcrypt.genSalt(10);
             let hashPassword = await bcrypt.hash(password, salt);
@@ -37,7 +37,7 @@ let hashUserPassword = (password) => {
 }
 
 let getAllUser = () => {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             let users = await db.User.findAll({
                 raw: true,
@@ -50,7 +50,7 @@ let getAllUser = () => {
 }
 
 let getUserInfoById = (userId) => {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             let user = await db.User.findOne({
                 where: { id: userId },
@@ -68,7 +68,7 @@ let getUserInfoById = (userId) => {
 }
 
 let updateUserData = (data) => {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             let user = await db.User.findOne({
                 where: { id: data.id }
@@ -97,7 +97,7 @@ let updateUserData = (data) => {
 }
 
 let deleteUser = (userId) => {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             let user = await db.User.findOne({
                 where: { id: userId }
