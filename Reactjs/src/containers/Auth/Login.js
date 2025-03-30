@@ -6,6 +6,7 @@ import './Login.scss';
 import { FormattedMessage } from 'react-intl';
 
 import adminService from '../../services/adminService';
+import userService from '../../services/userService';
 
 class Login extends Component {
     constructor(props) {
@@ -14,7 +15,7 @@ class Login extends Component {
             username: '',
             password: '',
             isShowPassword: false,
-
+            errMessage: ''
         }
     }
 
@@ -45,7 +46,25 @@ class Login extends Component {
     }
 
     handleLogin = async () => {
-        console.log('username', this.state.username, 'password', this.state.password);
+        this.setState({
+            errMessage: ''
+        })
+        try {
+            let data = await userService.handleUserLogin(this.state.username, this.state.password);
+            if (data && data.errCode !== 0) {
+                this.setState({
+                    errMessage: data.message
+                })
+            }
+            if (data && data.errCode === 0) {
+                this.props.userLoginSuccess(data.user);
+                this.props.navigate('/system/user-manage');
+            }
+        } catch (e) {
+            this.setState({
+                errMessage: e.response && e.response.data && e.response.data.message ? e.response.data.message : e.message
+            })
+        }
     }
 
     render() {
@@ -113,8 +132,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         navigate: (path) => dispatch(push(path)),
-        adminLoginSuccess: (adminInfo) => dispatch(actions.adminLoginSuccess(adminInfo)),
-        adminLoginFail: () => dispatch(actions.adminLoginFail()),
+        userLoginSuccess: (userInfo) => dispatch(actions.userLoginSuccess(userInfo)),
     };
 };
 

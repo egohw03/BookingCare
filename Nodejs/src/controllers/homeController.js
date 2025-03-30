@@ -1,7 +1,7 @@
 import db from "../models/index.js";
 import CRUDService from "../services/CRUDService.js";
 
-let getHomePage = async(req, res) => {
+let getHomePage = async (req, res) => {
     try {
         let data = await db.User.findAll();
 
@@ -21,7 +21,7 @@ let getCRUD = (req, res) => {
     return res.render("crud.ejs");
 }
 
-let postCRUD = async(req, res) => {
+let postCRUD = async (req, res) => {
     try {
         console.log("Request body:", req.body); // Log the request body for debugging
         let message = await CRUDService.createNewUser(req.body);
@@ -33,7 +33,7 @@ let postCRUD = async(req, res) => {
     }
 }
 
-let displayGetCRUD = async(req, res) => {
+let displayGetCRUD = async (req, res) => {
     try {
         let data = await CRUDService.getAllUser();
         return res.render("display-crud.ejs", { dataTable: data });
@@ -42,7 +42,7 @@ let displayGetCRUD = async(req, res) => {
     }
 }
 
-let getEditCRUD = async(req, res) => {
+let getEditCRUD = async (req, res) => {
     try {
         let userId = req.query.id;
         if (userId) {
@@ -59,7 +59,7 @@ let getEditCRUD = async(req, res) => {
     }
 }
 
-let putCRUD = async(req, res) => {
+let putCRUD = async (req, res) => {
     try {
         await CRUDService.updateUserData(req.body);
         return res.redirect('/get-crud');
@@ -69,7 +69,7 @@ let putCRUD = async(req, res) => {
     }
 }
 
-let deleteCRUD = async(req, res) => {
+let deleteCRUD = async (req, res) => {
     try {
         let userId = req.query.id;
         if (userId) {

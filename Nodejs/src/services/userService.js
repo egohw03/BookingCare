@@ -22,15 +22,15 @@ let handleUserLogin = (email, password) => {
                         userData.user = userObj;
                     } else {
                         userData.errCode = 3;
-                        userData.errMessage = "Wrong password!";
+                        userData.errMessage = "Wrong email or password!";
                     }
                 } else {
                     userData.errCode = 2;
-                    userData.errMessage = "User's not found!";
+                    userData.errMessage = "Wrong email or password!";
                 }
             } else {
                 userData.errCode = 1;
-                userData.errMessage = "Your's Email isn't exist in your system. Pls try other email!";
+                userData.errMessage = "Wrong email or password!";
             }
             resolve(userData)
         } catch (e) {
