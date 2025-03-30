@@ -18,9 +18,10 @@ let handleUserLogin = (email, password) => {
                         userData.errCode = 0;
                         userData.errMessage = "OK";
 
-                        const userObj = user.get({ plain: true });
-                        delete userObj.password;
-                        userData.user = userObj;
+                        // Since we're using raw: true, user is already a plain object
+                        // So we remove the .get() method call
+                        delete user.password;
+                        userData.user = user;
                     } else {
                         userData.errCode = 3;
                         userData.errMessage = "Wrong email or password!";
@@ -60,27 +61,48 @@ let checkUserEmail = (userEmail) => {
 let getAllUsers = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let users = '';
+            let userData = {};
+
             if (userId === 'ALL') {
-                users = await db.User.findAll({
+                let users = await db.User.findAll({
                     attributes: {
                         exclude: ['password']
-                    }
+                    },
+                    raw: true
                 });
-            }
-            if (userId && userId !== 'ALL') {
-                users = await db.User.findOne({
+
+                userData.errCode = 0;
+                userData.errMessage = "OK";
+                userData.users = users;
+            } else if (userId) {
+                let user = await db.User.findOne({
                     where: { id: userId },
                     attributes: {
                         exclude: ['password']
-                    }
+                    },
+                    raw: true
                 });
+
+                if (user) {
+                    userData.errCode = 0;
+                    userData.errMessage = "OK";
+                    userData.users = user;
+                } else {
+                    userData.errCode = 1;
+                    userData.errMessage = 'User not found';
+                    userData.users = {};
+                }
+            } else {
+                userData.errCode = 2;
+                userData.errMessage = 'Missing required parameter';
+                userData.users = {};
             }
-            resolve(users);
+
+            resolve(userData);
         } catch (e) {
             reject(e);
         }
-    })
+    });
 }
 
 let hashUserPassword = (password) => {
@@ -200,11 +222,11 @@ let deleteUser = (userId) => {
     })
 }
 
-module.exports = {
-    handleUserLogin: handleUserLogin,
-    checkUserEmail: checkUserEmail,
-    getAllUsers: getAllUsers,
-    createNewUser: createNewUser,
-    updateUserData: updateUserData,
-    deleteUser: deleteUser
+export {
+    handleUserLogin,
+    checkUserEmail,
+    getAllUsers,
+    createNewUser,
+    updateUserData,
+    deleteUser
 }

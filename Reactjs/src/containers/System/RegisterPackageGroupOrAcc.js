@@ -5,10 +5,11 @@ class RegisterPackageGroupOrAcc extends Component {
 
     constructor(props) {
         super(props);
-
     }
 
-
+    componentDidMount() {
+        document.title = "Register Package Group or Account | BookingCare";
+    }
 
     render() {
         return (

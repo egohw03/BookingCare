@@ -8,6 +8,7 @@ class ProductManage extends Component {
     }
 
     componentDidMount() {
+        document.title = "Product Management | BookingCare";
     }
 
 
