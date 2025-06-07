@@ -25,9 +25,14 @@
     }
 
     .languages {
+        .welcome {
+            margin-right: 10px;
+        }
+
         .language-en {
             margin: 0 15px;
             color: $common-text-color;
+            opacity: 0.5;
             cursor: pointer;
 
             &.active {
@@ -42,6 +47,7 @@
 
         .language-vi {
             color: $common-text-color;
+            opacity: 0.5;
             cursor: pointer;
 
             &.active {
@@ -53,5 +59,7 @@
         .language-vi:hover {
             color: lighten($common-text-color, 20%);
         }
+
+
     }
 }
