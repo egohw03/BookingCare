@@ -2,6 +2,7 @@
   "name": "react-app-hung",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@formatjs/intl-pluralrules": "^3.5.6",
     "@formatjs/intl-relativetimeformat": "^7.3.6",

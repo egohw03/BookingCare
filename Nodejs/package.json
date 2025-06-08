@@ -6,6 +6,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "npx nodemon --exec babel-node src/server.js"
     },
+    "proxy": "http://localhost:8080",
     "author": "",
     "license": "ISC",
     "description": "",

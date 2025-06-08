@@ -33,10 +33,15 @@ const updateUserData = (data) => {
         .then(response => response.data);
 }
 
+const getAllCodeService = (inputType) => {
+    return instance.get(`/api/allcode?type=${inputType}`)
+}
+
 export {
     handleUserLogin,
     getAllUsers,
     createNewUser,
     deleteUser,
-    updateUserData
+    updateUserData,
+    getAllCodeService
 }

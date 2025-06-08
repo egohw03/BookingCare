@@ -34,6 +34,37 @@
             "handbook": "Cẩm nang",
             "crud": "CRUD User",
             "crud-redux": "CRUD User Redux"
+        },
+        "user": {
+            "gender": "Giới tính",
+            "gender-male": "Nam",
+            "gender-female": "Nữ",
+            "role": "Vai trò",
+            "email": "Email",
+            "phone": "Số điện thoại",
+            "first-name": "Tên",
+            "last-name": "Họ",
+            "password": "Mật khẩu",
+            "login": "Đăng nhập",
+            "logout": "Đăng xuất",
+            "register": "Đăng ký",
+            "forgot-password": "Quên mật khẩu",
+            "reset-password": "Đặt lại mật khẩu",
+            "address": "Địa chỉ",
+            "position": "Chức vụ",
+            "image": "Ảnh đại diện"
         }
+    },
+    "options": {
+        "save": "Lưu",
+        "cancel": "Hủy",
+        "delete": "Xóa",
+        "edit": "Chỉnh sửa",
+        "add": "Thêm",
+        "update": "Cập nhật",
+        "view": "Xem",
+        "search": "Tìm kiếm",
+        "reset": "Đặt lại",
+        "confirm": "Xác nhận"
     }
 }

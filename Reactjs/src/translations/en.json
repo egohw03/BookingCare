@@ -34,6 +34,37 @@
             "handbook": "Handbook",
             "crud": "CRUD User",
             "crud-redux": "CRUD User Redux"
+        },
+        "user": {
+            "gender": "Gender",
+            "gender-male": "Male",
+            "gender-female": "Female",
+            "role": "Role",
+            "email": "Email",
+            "phone": "Phone number",
+            "first-name": "First name",
+            "last-name": "Last name",
+            "password": "Password",
+            "login": "Login",
+            "logout": "Logout",
+            "register": "Register",
+            "forgot-password": "Forgot password",
+            "reset-password": "Reset password",
+            "address": "Address",
+            "position": "Position",
+            "image": "Avatar"
         }
+    },
+    "options": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "add": "Add",
+        "update": "Update",
+        "view": "View",
+        "search": "Search",
+        "reset": "Reset",
+        "confirm": "Confirm"
     }
 }
