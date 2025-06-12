@@ -2,31 +2,46 @@ import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { getAllCodeService } from '../../../services/userService';
+import { LANGUAGES } from '../../../utils';
+import { fetchGenderStart } from '../../../store/actions/adminActions';
+import * as action from '../../../store/actions';
 
 class UserRedux extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            genderArr: []
-
+            genderArr: [],
+            positionArr: [],
+            roleArr: []
         }
     }
 
     async componentDidMount() {
-        try {
-            let res = await getAllCodeService('gender');
-            if (res.data && res.data.errCode === 0) {
-                this.setState({
-                    genderArr: res.data.data
-                });
-            } else {
-                this.setState({ genderArr: [] });
-            }
-        } catch (e) {
-            console.log(e);
-            this.setState({ genderArr: [], gender: '' });
+        this.props.getGenderStart();
+        // try {
+        //     let resGender = await getAllCodeService('gender');
+        //     this.setState({
+        //         genderArr: resGender && resGender.errCode === 0 ? resGender.data : []
+        //     })
+        //     let resPosition = await getAllCodeService('position');
+        //     this.setState({
+        //         positionArr: resPosition && resPosition.errCode === 0 ? resPosition.data : []
+        //     })
+        //     let resRole = await getAllCodeService('role');
+        //     this.setState({
+        //         roleArr: resRole && resRole.errCode === 0 ? resRole.data : []
+        //     })
+        // } catch (e) {
+        //     console.log(e);
+        //     this.setState({ genderArr: [], positionArr: [], roleArr: [] });
+        // }
+    }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.genderRedux !== this.props.genderRedux) {
+            this.setState({
+                genderArr: this.props.genderRedux
+            });
         }
-        document.title = "Product Management | BookingCare";
     }
 
     handleChangeInput = (e, field) => {
@@ -35,7 +50,7 @@ class UserRedux extends Component {
 
     render() {
         let genders = this.state.genderArr;
-        const { language } = this.props;
+        let language = this.props.language;
         return (
             <div className="user-redux-container">
                 <div className="title">
@@ -78,24 +93,20 @@ class UserRedux extends Component {
                                             </option>
                                         ))
                                     ) : (
-                                        <option value="">Không có dữ liệu giới tính</option>
+                                        <option value="">Không có dữ liệu</option>
                                     )}
                                 </select>
                             </div>
                             <div className="col-md-3">
                                 <label><FormattedMessage id="menu.user.position" defaultMessage="Position" /></label>
-                                <select className="form-control">
-                                    <option value="R1"><FormattedMessage id="menu.admin.manage-admin" defaultMessage="Admin" /></option>
-                                    <option value="R2"><FormattedMessage id="menu.admin.manage-doctor" defaultMessage="Doctor" /></option>
-                                    <option value="R3"><FormattedMessage id="menu.admin.manage-user" defaultMessage="Patient" /></option>
+                                <select className="form-control" value={this.state.position} onChange={e => this.handleChangeInput(e, 'position')}>
+
                                 </select>
                             </div>
                             <div className="col-md-3">
                                 <label><FormattedMessage id="menu.user.role" defaultMessage="Role" /></label>
-                                <select className="form-control">
-                                    <option value="R1"><FormattedMessage id="menu.admin.manage-admin" defaultMessage="Admin" /></option>
-                                    <option value="R2"><FormattedMessage id="menu.admin.manage-doctor" defaultMessage="Doctor" /></option>
-                                    <option value="R3"><FormattedMessage id="menu.admin.manage-user" defaultMessage="Patient" /></option>
+                                <select className="form-control" value={this.state.role} onChange={e => this.handleChangeInput(e, 'role')}>
+
                                 </select>
                             </div>
                             <div className="col-12 mt-3">
@@ -118,12 +129,19 @@ class UserRedux extends Component {
 
 const mapStateToProps = state => {
     return {
-        language: state.app.language
+        language: state.app.language,
+        genderReduc: state.admin.genders
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
+        getGenderStart: () => dispatch(fetchGenderStart()),
+        // fetchPositionStart: () => dispatch(actions.fetchPositionStart()),
+        // fetchRoleStart: () => dispatch(actions.fetchRoleStart()),
+        // createNewUserRedux: (data) => dispatch(actions.createNewUserRedux(data)),
+        // editUserRedux: (data) => dispatch(actions.editUserRedux(data)),
+        // deleteUserRedux: (userId) => dispatch(actions.deleteUserRedux(userId))
     };
 };
 

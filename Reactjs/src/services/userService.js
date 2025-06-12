@@ -35,6 +35,7 @@ const updateUserData = (data) => {
 
 const getAllCodeService = (inputType) => {
     return instance.get(`/api/allcode?type=${inputType}`)
+        .then(response => response.data);
 }
 
 export {
