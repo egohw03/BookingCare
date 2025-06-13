@@ -52,7 +52,7 @@
             "reset-password": "Đặt lại mật khẩu",
             "address": "Địa chỉ",
             "position": "Chức vụ",
-            "image": "Ảnh đại diện"
+            "avatar": "Ảnh đại diện"
         }
     },
     "options": {
@@ -65,6 +65,11 @@
         "view": "Xem",
         "search": "Tìm kiếm",
         "reset": "Đặt lại",
-        "confirm": "Xác nhận"
+        "confirm": "Xác nhận",
+        "close": "Đóng",
+        "select": "Chọn",
+        "add-new-user": "Thêm người dùng mới",
+        "update-user": "Cập nhật",
+        "choose-file": "Chọn tệp"
     }
 }

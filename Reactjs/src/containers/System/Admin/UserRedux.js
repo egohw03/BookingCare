@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { getAllCodeService } from '../../../services/userService';
 import { LANGUAGES } from '../../../utils';
-import { fetchGenderStart } from '../../../store/actions/adminActions';
+import { fetchGenderStart, fetchPositionStart, fetchRoleStart } from '../../../store/actions/adminActions';
 import * as action from '../../../store/actions';
 
 class UserRedux extends Component {
@@ -18,28 +18,24 @@ class UserRedux extends Component {
 
     async componentDidMount() {
         this.props.getGenderStart();
-        // try {
-        //     let resGender = await getAllCodeService('gender');
-        //     this.setState({
-        //         genderArr: resGender && resGender.errCode === 0 ? resGender.data : []
-        //     })
-        //     let resPosition = await getAllCodeService('position');
-        //     this.setState({
-        //         positionArr: resPosition && resPosition.errCode === 0 ? resPosition.data : []
-        //     })
-        //     let resRole = await getAllCodeService('role');
-        //     this.setState({
-        //         roleArr: resRole && resRole.errCode === 0 ? resRole.data : []
-        //     })
-        // } catch (e) {
-        //     console.log(e);
-        //     this.setState({ genderArr: [], positionArr: [], roleArr: [] });
-        // }
+        this.props.getPositionStart();
+        this.props.getRoleStart();
     }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.genderRedux !== this.props.genderRedux) {
             this.setState({
                 genderArr: this.props.genderRedux
+            });
+        }
+        if (prevProps.positionRedux !== this.props.positionRedux) {
+            this.setState({
+                positionArr: this.props.positionRedux
+            });
+        }
+        if (prevProps.roleRedux !== this.props.roleRedux) {
+            this.setState({
+                roleArr: this.props.roleRedux
             });
         }
     }
@@ -48,17 +44,33 @@ class UserRedux extends Component {
         this.setState({ [field]: e.target.value });
     }
 
+    handleFileChange = (e) => {
+        const file = e.target.files[0];
+        this.setState({ avatar: file });
+    }
+
     render() {
         let genders = this.state.genderArr;
+        let positions = this.state.positionArr;
+        let roles = this.state.roleArr;
         let language = this.props.language;
+        let isGetGender = this.props.isLoadingGender;
+        let isGetPosition = this.props.isLoadingPosition;
+        let isGetRole = this.props.isLoadingRole;
         return (
             <div className="user-redux-container">
                 <div className="title">
                     <FormattedMessage id="menu.admin.crud-redux" defaultMessage="User Redux" />
                 </div>
+                <div>{isGetGender === true ? 'Loading genders' : ''}</div>
+                <div>{isGetPosition === true ? 'Loading positions' : ''}</div>
+                <div>{isGetRole === true ? 'Loading roles' : ''}</div>
                 <div className="user-redux-body">
                     <div className="container">
                         <form className="row g-3" onSubmit={this.handleSaveUser}>
+                            <div className="mb-6">
+                                <FormattedMessage id="options.add-new-user" defaultMessage="Add new user" />
+                            </div>
                             <div className="col-md-6">
                                 <label><FormattedMessage id="menu.user.email" defaultMessage="Email" /></label>
                                 <input type="email" className="form-control" value={this.state.email} onChange={e => this.handleChangeInput(e, 'email')} required />
@@ -100,14 +112,34 @@ class UserRedux extends Component {
                             <div className="col-md-3">
                                 <label><FormattedMessage id="menu.user.position" defaultMessage="Position" /></label>
                                 <select className="form-control" value={this.state.position} onChange={e => this.handleChangeInput(e, 'position')}>
-
+                                    {positions && positions.length > 0 ? (
+                                        positions.map((item) => (
+                                            <option key={item.key} value={item.key}>
+                                                {language === 'vi' ? item.valueVi : item.valueEn}
+                                            </option>
+                                        ))
+                                    ) : (
+                                        <option value="">Không có dữ liệu</option>
+                                    )}
                                 </select>
                             </div>
                             <div className="col-md-3">
                                 <label><FormattedMessage id="menu.user.role" defaultMessage="Role" /></label>
                                 <select className="form-control" value={this.state.role} onChange={e => this.handleChangeInput(e, 'role')}>
-
+                                    {roles && roles.length > 0 ? (
+                                        roles.map((item) => (
+                                            <option key={item.key} value={item.key}>
+                                                {language === 'vi' ? item.valueVi : item.valueEn}
+                                            </option>
+                                        ))
+                                    ) : (
+                                        <option value="">Không có dữ liệu</option>
+                                    )}
                                 </select>
+                            </div>
+                            <div className="col-12">
+                                <label><FormattedMessage id="menu.user.avatar" defaultMessage="Avatar" /></label>
+                                <input type="file" className="form-control" accept="image/*" onChange={this.handleFileChange} />
                             </div>
                             <div className="col-12 mt-3">
                                 <button type="submit" className="btn btn-primary me-2">
@@ -117,6 +149,7 @@ class UserRedux extends Component {
                                     <FormattedMessage id="options.reset" defaultMessage="Reset" />
                                 </button>
                             </div>
+
                         </form>
                     </div>
                 </div >
@@ -130,18 +163,20 @@ class UserRedux extends Component {
 const mapStateToProps = state => {
     return {
         language: state.app.language,
-        genderReduc: state.admin.genders
+        genderRedux: state.admin.genders,
+        isLoadingGender: state.admin.isLoadingGender,
+        positionRedux: state.admin.positions,
+        isLoadingPosition: state.admin.isLoadingPosition,
+        roleRedux: state.admin.roles,
+        isLoadingRole: state.admin.isLoadingRole
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         getGenderStart: () => dispatch(fetchGenderStart()),
-        // fetchPositionStart: () => dispatch(actions.fetchPositionStart()),
-        // fetchRoleStart: () => dispatch(actions.fetchRoleStart()),
-        // createNewUserRedux: (data) => dispatch(actions.createNewUserRedux(data)),
-        // editUserRedux: (data) => dispatch(actions.editUserRedux(data)),
-        // deleteUserRedux: (userId) => dispatch(actions.deleteUserRedux(userId))
+        getPositionStart: () => dispatch(fetchPositionStart()),
+        getRoleStart: () => dispatch(fetchRoleStart()),
     };
 };
 

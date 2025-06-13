@@ -52,7 +52,7 @@
             "reset-password": "Reset password",
             "address": "Address",
             "position": "Position",
-            "image": "Avatar"
+            "avatar": "Avatar"
         }
     },
     "options": {
@@ -65,6 +65,11 @@
         "view": "View",
         "search": "Search",
         "reset": "Reset",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "close": "Close",
+        "back": "Back",
+        "add-new-user": "Add new user",
+        "update-user": "Update user",
+        "choose-file": "Choose file"
     }
 }
