@@ -70,6 +70,8 @@
         "select": "Chọn",
         "add-new-user": "Thêm người dùng mới",
         "update-user": "Cập nhật",
-        "choose-file": "Chọn tệp"
+        "choose-file": "Chọn tệp",
+        "choose-image": "Chọn ảnh",
+        "upload-image": "Tải ảnh lên"
     }
 }

@@ -70,6 +70,8 @@
         "back": "Back",
         "add-new-user": "Add new user",
         "update-user": "Update user",
-        "choose-file": "Choose file"
+        "choose-file": "Choose file",
+        "choose-image": "Choose image",
+        "upload-image": "Upload image"
     }
 }

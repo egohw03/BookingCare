@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
-import { getAllCodeService } from '../../../services/userService';
 import { LANGUAGES } from '../../../utils';
 import { fetchGenderStart, fetchPositionStart, fetchRoleStart } from '../../../store/actions/adminActions';
 import * as action from '../../../store/actions';
+import './UserRedux.scss';
+import Lightbox from 'react-image-lightbox';
+import 'react-image-lightbox/style.css';
 
 class UserRedux extends Component {
     constructor(props) {
@@ -12,7 +14,9 @@ class UserRedux extends Component {
         this.state = {
             genderArr: [],
             positionArr: [],
-            roleArr: []
+            roleArr: [],
+            previewImgURL: '',
+            isOpen: false,
         }
     }
 
@@ -45,8 +49,21 @@ class UserRedux extends Component {
     }
 
     handleFileChange = (e) => {
-        const file = e.target.files[0];
-        this.setState({ avatar: file });
+        let file = e.target.files[0];
+        if (file) {
+            const objectUrl = URL.createObjectURL(file);
+            this.setState({
+                previewImgURL: objectUrl
+            });
+        }
+    }
+
+    openReviewImage = () => {
+        if (this.state.previewImgURL) {
+            this.setState({
+                isOpen: true,
+            });
+        }
     }
 
     render() {
@@ -139,9 +156,17 @@ class UserRedux extends Component {
                             </div>
                             <div className="col-12">
                                 <label><FormattedMessage id="menu.user.avatar" defaultMessage="Avatar" /></label>
-                                <input type="file" className="form-control" accept="image/*" onChange={this.handleFileChange} />
+                                <div className="preview-img-container col-3">
+                                    <input type="file" id="previewImg" className="form-control" accept="image/*" onChange={this.handleFileChange} hidden />
+                                    <label className="label-upload" htmlFor="previewImg"><FormattedMessage id="options.upload-image" /></label>
+                                    <div className="preview-image"
+                                        style={{ backgroundImage: `url(${this.state.previewImgURL})` }}
+                                        onClick={() => this.openReviewImage()}
+                                    >
+                                    </div>
+                                </div>
                             </div>
-                            <div className="col-12 mt-3">
+                            <div className="col-3 mt-3">
                                 <button type="submit" className="btn btn-primary me-2">
                                     <FormattedMessage id="options.save" defaultMessage="Save" />
                                 </button>
@@ -153,6 +178,13 @@ class UserRedux extends Component {
                         </form>
                     </div>
                 </div >
+
+                {this.state.isOpen === true && (
+                    <Lightbox
+                        mainSrc={this.state.previewImgURL}
+                        onCloseRequest={() => this.setState({ isOpen: false })}
+                    />
+                )}
             </div >
 
         )
