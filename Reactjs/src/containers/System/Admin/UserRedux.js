@@ -17,6 +17,17 @@ class UserRedux extends Component {
             roleArr: [],
             previewImgURL: '',
             isOpen: false,
+
+            email: '',
+            password: '',
+            firstName: '',
+            lastName: '',
+            phoneNumber: '',
+            address: '',
+            gender: '',
+            position: '',
+            role: '',
+            avatar: ''
         }
     }
 
@@ -29,23 +40,28 @@ class UserRedux extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.genderRedux !== this.props.genderRedux) {
             this.setState({
-                genderArr: this.props.genderRedux
+                genderArr: this.props.genderRedux,
+                gender: this.props.genderRedux && this.props.genderRedux.length > 0 ? this.props.genderRedux[0].key : ''
             });
         }
         if (prevProps.positionRedux !== this.props.positionRedux) {
             this.setState({
-                positionArr: this.props.positionRedux
+                positionArr: this.props.positionRedux,
+                position: this.props.positionRedux && this.props.positionRedux.length > 0 ? this.props.positionRedux[0].key : ''
             });
         }
         if (prevProps.roleRedux !== this.props.roleRedux) {
             this.setState({
-                roleArr: this.props.roleRedux
+                roleArr: this.props.roleRedux,
+                role: this.props.roleRedux && this.props.roleRedux.length > 0 ? this.props.roleRedux[0].key : ''
             });
         }
     }
 
     handleChangeInput = (e, field) => {
-        this.setState({ [field]: e.target.value });
+        this.setState({
+            [field]: e.target.value
+        });
     }
 
     handleFileChange = (e) => {
@@ -53,7 +69,8 @@ class UserRedux extends Component {
         if (file) {
             const objectUrl = URL.createObjectURL(file);
             this.setState({
-                previewImgURL: objectUrl
+                previewImgURL: objectUrl,
+                avatar: file
             });
         }
     }
@@ -66,6 +83,36 @@ class UserRedux extends Component {
         }
     }
 
+    checkValidInput = () => {
+        let isValid = true;
+        let arrCheck = ['email', 'password', 'firstName', 'lastName', 'phoneNumber', 'address'];
+        for (let i = 0; i < arrCheck.length; i++) {
+            if (!this.state[arrCheck[i]]) {
+                isValid = false;
+                alert(`Missing parameter: ${arrCheck[i]}`);
+                break;
+            }
+        }
+        return isValid; // MUST return so caller can know result
+    }
+
+    handleSaveUser = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        const isValid = this.checkValidInput();
+        if (!isValid) return; // stop if validation failed
+        this.props.createNewUserSuccess({
+            email: this.state.email,
+            password: this.state.password,
+            firstName: this.state.firstName,
+            lastName: this.state.lastName,
+            address: this.state.address,
+            phonenumber: this.state.phoneNumber,
+            gender: this.state.gender,
+            roleId: this.state.role,
+            positionId: this.state.position
+        });
+    }
+
     render() {
         let genders = this.state.genderArr;
         let positions = this.state.positionArr;
@@ -74,8 +121,10 @@ class UserRedux extends Component {
         let isGetGender = this.props.isLoadingGender;
         let isGetPosition = this.props.isLoadingPosition;
         let isGetRole = this.props.isLoadingRole;
+        const { createUserSuccess, createUserError } = this.props;
+
         return (
-            <div className="user-redux-container">
+            <div className="user-redux-container" >
                 <div className="title">
                     <FormattedMessage id="menu.admin.crud-redux" defaultMessage="User Redux" />
                 </div>
@@ -174,7 +223,8 @@ class UserRedux extends Component {
                                     <FormattedMessage id="options.reset" defaultMessage="Reset" />
                                 </button>
                             </div>
-
+                            {createUserSuccess && <div className="alert alert-success mt-2">User saved successfully</div>}
+                            {createUserError && <div className="alert alert-danger mt-2">Save user failed</div>}
                         </form>
                     </div>
                 </div >
@@ -184,12 +234,12 @@ class UserRedux extends Component {
                         mainSrc={this.state.previewImgURL}
                         onCloseRequest={() => this.setState({ isOpen: false })}
                     />
-                )}
+                )
+                }
             </div >
 
         )
     }
-
 }
 
 const mapStateToProps = state => {
@@ -200,15 +250,18 @@ const mapStateToProps = state => {
         positionRedux: state.admin.positions,
         isLoadingPosition: state.admin.isLoadingPosition,
         roleRedux: state.admin.roles,
-        isLoadingRole: state.admin.isLoadingRole
+        isLoadingRole: state.admin.isLoadingRole,
+        createUserSuccess: state.admin.createUserSuccess,
+        createUserError: state.admin.createUserError
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        getGenderStart: () => dispatch(fetchGenderStart()),
-        getPositionStart: () => dispatch(fetchPositionStart()),
-        getRoleStart: () => dispatch(fetchRoleStart()),
+        getGenderStart: () => dispatch(action.fetchGenderStart()),
+        getPositionStart: () => dispatch(action.fetchPositionStart()),
+        getRoleStart: () => dispatch(action.fetchRoleStart()),
+        createNewUserSuccess: (data) => dispatch(action.createNewUserSuccess(data))
     };
 };
 

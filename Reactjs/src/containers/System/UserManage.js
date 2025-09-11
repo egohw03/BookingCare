@@ -32,7 +32,7 @@ class UserManage extends Component {
                     users: response.users
                 });
             } else {
-                console.error('Failed to get users:', response);
+                console.error('FAILED to get users:', response);
                 alert(response?.errMessage || 'Error loading users');
             }
         } catch (e) {

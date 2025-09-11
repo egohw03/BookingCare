@@ -6,7 +6,9 @@ const initialState = {
     roles: [],
     isLoadingGender: false,
     isLoadingPosition: false,
-    isLoadingRole: false
+    isLoadingRole: false,
+    createUserSuccess: false,
+    createUserError: false
 }
 
 const adminReducer = (state = initialState, action) => {
@@ -30,7 +32,6 @@ const adminReducer = (state = initialState, action) => {
             let copyState = { ...state };
             copyState.isLoadingGender = false;
             copyState.genders = [];
-            console.log('fetching gender failed: ', action);
             return {
                 ...copyState
             }
@@ -54,7 +55,6 @@ const adminReducer = (state = initialState, action) => {
             let copyState = { ...state };
             copyState.isLoadingPosition = false;
             copyState.positions = [];
-            console.log('fetching position failed: ', action);
             return {
                 ...copyState
             }
@@ -78,7 +78,20 @@ const adminReducer = (state = initialState, action) => {
             let copyState = { ...state };
             copyState.isLoadingRole = false;
             copyState.roles = [];
-            console.log('fetching role failed: ', action);
+            return {
+                ...copyState
+            }
+        }
+        case actionTypes.CREATE_USER_SUCCESS: {
+            let copyState = { ...state };
+            copyState.createUserSuccess = true;
+            return {
+                ...copyState
+            }
+        }
+        case actionTypes.CREATE_USER_FAILED: {
+            let copyState = { ...state };
+            copyState.createUserError = true;
             return {
                 ...copyState
             }
