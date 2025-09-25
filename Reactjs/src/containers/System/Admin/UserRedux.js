@@ -7,6 +7,7 @@ import * as action from '../../../store/actions';
 import './UserRedux.scss';
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
+import TableManageUser from './TableManageUser';
 
 class UserRedux extends Component {
     constructor(props) {
@@ -27,7 +28,9 @@ class UserRedux extends Component {
             gender: '',
             position: '',
             role: '',
-            avatar: ''
+            avatar: '',
+            isEditing: false,
+            id: ''
         }
     }
 
@@ -38,6 +41,31 @@ class UserRedux extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        // populate form when selecting a user to edit
+        if (prevProps.userEditing !== this.props.userEditing) {
+            const ue = this.props.userEditing;
+            if (ue) {
+                this.setState({
+                    email: ue.email || '',
+                    password: '', // do not preload password
+                    firstName: ue.firstName || '',
+                    lastName: ue.lastName || '',
+                    address: ue.address || '',
+                    phoneNumber: ue.phonenumber || ue.phoneNumber || '',
+                    gender: ue.gender || '',
+                    position: ue.positionId || '',
+                    role: ue.roleId || '',
+                    id: ue.id,
+                    isEditing: true
+                });
+            } else {
+                // cleared editing -> reset edit mode (keep current selects if needed)
+                this.setState({
+                    isEditing: false,
+                    id: ''
+                });
+            }
+        }
         if (prevProps.genderRedux !== this.props.genderRedux) {
             this.setState({
                 genderArr: this.props.genderRedux,
@@ -85,7 +113,12 @@ class UserRedux extends Component {
 
     checkValidInput = () => {
         let isValid = true;
-        let arrCheck = ['email', 'password', 'firstName', 'lastName', 'phoneNumber', 'address'];
+        // Base required fields
+        let arrCheck = ['email', 'firstName', 'lastName', 'phoneNumber', 'address'];
+        // Only require password when creating new user
+        if (!this.state.isEditing) {
+            arrCheck.splice(1, 0, 'password'); // insert after email for message order
+        }
         for (let i = 0; i < arrCheck.length; i++) {
             if (!this.state[arrCheck[i]]) {
                 isValid = false;
@@ -93,24 +126,81 @@ class UserRedux extends Component {
                 break;
             }
         }
-        return isValid; // MUST return so caller can know result
+        return isValid;
     }
 
     handleSaveUser = (e) => {
         if (e && e.preventDefault) e.preventDefault();
         const isValid = this.checkValidInput();
-        if (!isValid) return; // stop if validation failed
-        this.props.createNewUserSuccess({
-            email: this.state.email,
-            password: this.state.password,
-            firstName: this.state.firstName,
-            lastName: this.state.lastName,
-            address: this.state.address,
-            phonenumber: this.state.phoneNumber,
-            gender: this.state.gender,
-            roleId: this.state.role,
-            positionId: this.state.position
-        });
+        if (!isValid) return;
+        if (this.state.isEditing) {
+            this.props.updateUser({
+                id: this.state.id,
+                firstName: this.state.firstName,
+                lastName: this.state.lastName,
+                address: this.state.address,
+                phonenumber: this.state.phoneNumber,
+                gender: this.state.gender,
+                roleId: this.state.role,
+                positionId: this.state.position
+            });
+        } else {
+            this.props.createNewUserSuccess({
+                email: this.state.email,
+                password: this.state.password,
+                firstName: this.state.firstName,
+                lastName: this.state.lastName,
+                address: this.state.address,
+                phonenumber: this.state.phoneNumber,
+                gender: this.state.gender,
+                roleId: this.state.role,
+                positionId: this.state.position
+            });
+        }
+    }
+
+    handleReset = (forceNew = false) => {
+        // If forceNew or not in editing mode, clear to defaults
+        if (forceNew || !this.state.isEditing) {
+            const defaultGender = this.state.genderArr && this.state.genderArr.length > 0 ? this.state.genderArr[0].key : '';
+            const defaultPosition = this.state.positionArr && this.state.positionArr.length > 0 ? this.state.positionArr[0].key : '';
+            const defaultRole = this.state.roleArr && this.state.roleArr.length > 0 ? this.state.roleArr[0].key : '';
+            this.setState({
+                email: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+                phoneNumber: '',
+                address: '',
+                gender: defaultGender,
+                position: defaultPosition,
+                role: defaultRole,
+                previewImgURL: '',
+                avatar: '',
+                isEditing: false,
+                id: ''
+            });
+            return;
+        }
+        // In editing mode without force, reset back to original editing user values
+        const ue = this.props.userEditing;
+        if (ue) {
+            this.setState({
+                email: ue.email || '',
+                password: '',
+                firstName: ue.firstName || '',
+                lastName: ue.lastName || '',
+                address: ue.address || '',
+                phoneNumber: ue.phonenumber || ue.phoneNumber || '',
+                gender: ue.gender || '',
+                position: ue.positionId || '',
+                role: ue.roleId || '',
+                previewImgURL: '',
+                avatar: '',
+                isEditing: true,
+                id: ue.id
+            });
+        }
     }
 
     render() {
@@ -139,11 +229,24 @@ class UserRedux extends Component {
                             </div>
                             <div className="col-md-6">
                                 <label><FormattedMessage id="menu.user.email" defaultMessage="Email" /></label>
-                                <input type="email" className="form-control" value={this.state.email} onChange={e => this.handleChangeInput(e, 'email')} required />
+                                <input type="email" className="form-control" value={this.state.email} onChange={e => this.handleChangeInput(e, 'email')} required disabled={this.state.isEditing} />
                             </div>
                             <div className="col-md-6">
                                 <label><FormattedMessage id="menu.user.password" defaultMessage="Password" /></label>
-                                <input type="password" className="form-control" value={this.state.password} onChange={e => this.handleChangeInput(e, 'password')} required />
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    value={this.state.password}
+                                    onChange={e => this.handleChangeInput(e, 'password')}
+                                    required={!this.state.isEditing}
+                                    disabled={this.state.isEditing}
+                                    title={this.state.isEditing ? 'Password không cần khi cập nhật' : ''}
+                                />
+                                {this.state.isEditing && (
+                                    <div className="form-text text-muted">
+                                        <FormattedMessage id="hints.password-skip-update" defaultMessage="Bạn không cần nhập mật khẩu khi cập nhật." />
+                                    </div>
+                                )}
                             </div>
                             <div className="col-md-6">
                                 <label><FormattedMessage id="menu.user.first-name" defaultMessage="First Name" /></label>
@@ -217,8 +320,13 @@ class UserRedux extends Component {
                             </div>
                             <div className="col-3 mt-3">
                                 <button type="submit" className="btn btn-primary me-2">
-                                    <FormattedMessage id="options.save" defaultMessage="Save" />
+                                    {this.state.isEditing ? <FormattedMessage id="options.update" defaultMessage="Update" /> : <FormattedMessage id="options.save" defaultMessage="Save" />}
                                 </button>
+                                {this.state.isEditing && (
+                                    <button type="button" className="btn btn-outline-secondary me-2" onClick={() => { this.props.clearEditing(); this.handleReset && this.handleReset(true); }}>
+                                        <FormattedMessage id="options.cancel-edit" defaultMessage="Cancel" />
+                                    </button>
+                                )}
                                 <button type="button" className="btn btn-secondary" onClick={this.handleReset}>
                                     <FormattedMessage id="options.reset" defaultMessage="Reset" />
                                 </button>
@@ -228,6 +336,7 @@ class UserRedux extends Component {
                         </form>
                     </div>
                 </div >
+                <TableManageUser />
 
                 {this.state.isOpen === true && (
                     <Lightbox
@@ -252,7 +361,9 @@ const mapStateToProps = state => {
         roleRedux: state.admin.roles,
         isLoadingRole: state.admin.isLoadingRole,
         createUserSuccess: state.admin.createUserSuccess,
-        createUserError: state.admin.createUserError
+        createUserError: state.admin.createUserError,
+        userEditing: state.admin.userEditing,
+        isUpdatingUser: state.admin.isUpdatingUser
     };
 };
 
@@ -261,7 +372,9 @@ const mapDispatchToProps = dispatch => {
         getGenderStart: () => dispatch(action.fetchGenderStart()),
         getPositionStart: () => dispatch(action.fetchPositionStart()),
         getRoleStart: () => dispatch(action.fetchRoleStart()),
-        createNewUserSuccess: (data) => dispatch(action.createNewUserSuccess(data))
+        createNewUserSuccess: (data) => dispatch(action.createNewUserSuccess(data)),
+        updateUser: (data) => dispatch(action.updateUserRedux(data)),
+        clearEditing: () => dispatch(action.clearUserEditing())
     };
 };
 

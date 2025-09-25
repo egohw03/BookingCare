@@ -1,5 +1,5 @@
 import actionTypes from "./actionTypes";
-import { getAllCodeService, createNewUser } from "../../services/userService";
+import { getAllCodeService, createNewUser, getAllUsers, deleteUser as deleteUserApi, updateUserData as updateUserApi } from "../../services/userService";
 
 export const fetchGenderStart = () => {
     return async (dispatch, getState) => {
@@ -89,9 +89,9 @@ export const createNewUserSuccess = (data) => {
     return async (dispatch, getState) => {
         try {
             let res = await createNewUser(data);
-            console.log('check create new user redux');
             if (res && res.errCode === 0) {
                 dispatch(saveUserSuccess());
+                dispatch(fetchAllUsersRedux());
             } else {
                 dispatch(saveUserFailed());
             }
@@ -109,3 +109,76 @@ export const saveUserSuccess = () => ({
 export const saveUserFailed = () => ({
     type: actionTypes.CREATE_USER_FAILED
 })
+
+export const fetchAllUsersRedux = () => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch({
+                type: actionTypes.FETCH_ALL_USERS_START
+            })
+            let res = await getAllUsers("ALL");
+            if (res && res.errCode === 0) {
+                dispatch(fetchAllUsersSuccess(res.users));
+            } else {
+                dispatch(fetchAllUsersFailed());
+            }
+        } catch (e) {
+            dispatch(fetchAllUsersFailed());
+            console.log('fetchAllUsersRedux error:', e);
+        }
+    }
+}
+
+export const fetchAllUsersSuccess = (usersData) => ({
+    type: actionTypes.FETCH_ALL_USERS_SUCCESS,
+    data: usersData
+})
+
+export const fetchAllUsersFailed = () => ({
+    type: actionTypes.FETCH_ALL_USERS_FAILED,
+})
+
+export const setUserEditing = (user) => ({
+    type: actionTypes.EDIT_SET_USER,
+    data: user
+});
+
+export const clearUserEditing = () => ({
+    type: actionTypes.EDIT_CLEAR_USER
+});
+
+export const updateUserRedux = (data) => {
+    return async (dispatch) => {
+        try {
+            dispatch({ type: actionTypes.UPDATE_USER_START });
+            const res = await updateUserApi(data);
+            if (res && res.errCode === 0) {
+                dispatch({ type: actionTypes.UPDATE_USER_SUCCESS });
+                dispatch(fetchAllUsersRedux());
+            } else {
+                dispatch({ type: actionTypes.UPDATE_USER_FAILED });
+            }
+        } catch (e) {
+            dispatch({ type: actionTypes.UPDATE_USER_FAILED });
+            console.log('updateUserRedux error:', e);
+        }
+    }
+}
+
+export const deleteUserRedux = (userId) => {
+    return async (dispatch) => {
+        try {
+            dispatch({ type: actionTypes.DELETE_USER_START });
+            const res = await deleteUserApi(userId);
+            if (res && res.errCode === 0) {
+                dispatch({ type: actionTypes.DELETE_USER_SUCCESS });
+                dispatch(fetchAllUsersRedux());
+            } else {
+                dispatch({ type: actionTypes.DELETE_USER_FAILED });
+            }
+        } catch (e) {
+            dispatch({ type: actionTypes.DELETE_USER_FAILED });
+            console.log('deleteUserRedux error:', e);
+        }
+    }
+}

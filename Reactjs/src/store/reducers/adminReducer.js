@@ -8,7 +8,12 @@ const initialState = {
     isLoadingPosition: false,
     isLoadingRole: false,
     createUserSuccess: false,
-    createUserError: false
+    createUserError: false,
+    users: [],
+    isLoadingAllUsers: false,
+    userEditing: null,
+    isUpdatingUser: false,
+    isDeletingUser: false
 }
 
 const adminReducer = (state = initialState, action) => {
@@ -95,6 +100,50 @@ const adminReducer = (state = initialState, action) => {
             return {
                 ...copyState
             }
+        }
+        case actionTypes.FETCH_ALL_USERS_START: {
+            return {
+                ...state,
+                isLoadingAllUsers: true
+            }
+        }
+        case actionTypes.FETCH_ALL_USERS_SUCCESS: {
+            return {
+                ...state,
+                isLoadingAllUsers: false,
+                users: action.data || []
+            }
+        }
+        case actionTypes.FETCH_ALL_USERS_FAILED: {
+            return {
+                ...state,
+                isLoadingAllUsers: false,
+                users: []
+            }
+        }
+        case actionTypes.EDIT_SET_USER: {
+            return { ...state, userEditing: action.data }
+        }
+        case actionTypes.EDIT_CLEAR_USER: {
+            return { ...state, userEditing: null }
+        }
+        case actionTypes.UPDATE_USER_START: {
+            return { ...state, isUpdatingUser: true }
+        }
+        case actionTypes.UPDATE_USER_SUCCESS: {
+            return { ...state, isUpdatingUser: false, userEditing: null }
+        }
+        case actionTypes.UPDATE_USER_FAILED: {
+            return { ...state, isUpdatingUser: false }
+        }
+        case actionTypes.DELETE_USER_START: {
+            return { ...state, isDeletingUser: true }
+        }
+        case actionTypes.DELETE_USER_SUCCESS: {
+            return { ...state, isDeletingUser: false }
+        }
+        case actionTypes.DELETE_USER_FAILED: {
+            return { ...state, isDeletingUser: false }
         }
         default:
             return state;
